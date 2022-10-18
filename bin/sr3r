@@ -11,7 +11,7 @@ if [[ $# == 0
 fi
 
 # git rev-parse --show-toplevel gives the path to the top of the Git repo
-# data pump name is the name of the next directory below
+# Data pump name is the name of the next directory below
 git_tld=$(git rev-parse --show-toplevel)
 ret=$?
 if [ $ret != 0 ]; then
