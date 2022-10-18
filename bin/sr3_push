@@ -34,7 +34,7 @@ if [ $# -ge 2 ]; then
     i=0
     for arg in "$@"; do
         ((i++))
-        if [ $i -gt 1 ]; then
+        if (( i > 1 )); then
             comment="$comment $arg"
         fi
     done
