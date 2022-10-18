@@ -22,6 +22,47 @@ export PATH=path_to_repo/sr3_tools/bin:$PATH
 sudo apt install dsh
 ```
 
+## Configuration Repository Layout
+
+sr3_tools works in conjuction with a Git repository that contains the Sarracenia configuration files for one or more data pump clusters.
+
+The layout of the repository should be similar to the following:
+
+```
+config_repo_root
+├── _dsh_config
+│   ├── pump1.list
+│   └── pump2.list
+├── pump1
+│   ├── cpost
+│   ├── credentials.conf
+│   ├── default.conf
+│   ├── plugins
+│   ├── poll
+│   ├── post
+│   ├── sarra
+│   ├── sender
+│   ├── shovel
+│   ├── subscribe
+│   └── winnow
+├── pump2
+│   ├── cpost
+│   ├── credentials.conf
+│   ├── default.conf
+│   ├── plugins
+│   ├── poll
+│   ├── post
+│   ├── sarra
+│   ├── sender
+│   ├── shovel
+│   ├── subscribe
+│   └── winnow
+├── .git
+└── .gitignore
+```
+
+
+
 ## Command Descriptions
 
 ### `sr3d`
