@@ -1,0 +1,2 @@
+#!/bin/bash
+sr3r "cd ~/.cache/sr3/log; $*"

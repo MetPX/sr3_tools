@@ -1,0 +1,2 @@
+#!/bin/bash
+sr3r -bg "cd ~/.config/sr3; git pull"

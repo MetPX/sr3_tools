@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [[ $# == 0
+    || ($# == 1 && "$1" == '-h')
+    || ($# == 1 && "$1" == '-bg')]]; then
+    echo '[ERROR] no command given'
+    echo 'Usage: sr3r [-bg] command...'
+    echo '       -bg will use --concurrent-shell for DSH'
+    echo 'Environment variable SR3TOOLS_DSH_ARGS can be used to pass arguments to DSH.'
+    exit 2
+fi
+
+# git rev-parse --show-toplevel gives the path to the top of the Git repo
+# data pump name is the name of the next directory below
+git_tld=$(git rev-parse --show-toplevel)
+ret=$?
+if [ $ret != 0 ]; then
+    echo "[ERROR] $0 must be run within a Git repository."
+    exit $ret
+fi
+pump_name=$(pwd | sed "s|$(git rev-parse --show-toplevel)||g" | cut -d '/' -f 2)
+if [ ${#pump_name} -le 0 ]; then
+    echo "[ERROR] Invalid data pump name. Are you in the correct directory?"
+    exit 3
+fi
+
+machine_list="${git_tld}/_dsh_config/${pump_name}.list"
+if [ ! -e "${machine_list}" ]; then
+    echo "[ERROR] dsh machine list does not exist (${machine_list})."
+    exit 4
+fi
+
+echo "Data Pump Name: ${pump_name}. DSH Machine List: ${machine_list}"
+
+# Handle dsh arguments. --concurrent-shell runs commands on each machine in parallel; --wait-shell is one at a time.
+if [ "$1" == '-bg' ]; then
+    shift # params shift left by one
+    dsh_args="--concurrent-shell ${SR3TOOLS_DSH_ARGS}"
+elif [[ "${SR3TOOLS_DSH_ARGS}" == *"--concurrent-shell"* ]] || [[ "${SR3TOOLS_DSH_ARGS}" == *"-c"* ]]; then
+    dsh_args="${SR3TOOLS_DSH_ARGS}"
+else
+    dsh_args="--wait-shell ${SR3TOOLS_DSH_ARGS}"
+fi
+# Trim leading or trailing whitespace, otherwise dsh complains
+dsh_args=$(echo "${dsh_args}" | sed -e 's/ *$//g' | sed -e 's/*$ //g')
+
+dsh --remoteshell ssh --show-machine-names "${dsh_args}" --file "${machine_list}" "$*"
