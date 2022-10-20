@@ -2,6 +2,8 @@
 
 *sr3_tools* are a collection of scripts used to manage data pumps (clusters) running Sarracenia v3 (sr3).
 
+<br>
+
 ## Installation/Setup
 
 To install, clone the repository:
@@ -22,6 +24,8 @@ export PATH=path_to_repo/sr3_tools/bin:$PATH
 sudo apt install dsh
 ```
 
+<br>
+
 ## Configuration Repository Layout
 
 sr3_tools works in conjuction with a Git repository that contains the Sarracenia configuration files for one or more data pump clusters.
@@ -32,6 +36,7 @@ The layout of the repository should be similar to the following:
 config_repo_root
 ├── _dsh_config
 │   ├── pump1.list
+│   ├── pump1_ssh_config (optional)
 │   └── pump2.list
 ├── pump1
 │   ├── cpost
@@ -61,7 +66,29 @@ config_repo_root
 └── .gitignore
 ```
 
+### Files in `_dsh_config`
 
+These files define the configurations used for `dsh` and `ssh`.
+
+- `$pump_name.list` is the dsh machine file; a list of hosts to connect to, one per line.
+
+    **Example:**  
+
+    ```
+    user@node1.example.com
+    user@node2.example.com
+    ```
+
+- `$pump_name_ssh_config` is an SSH client config file. This is optional. When the file exists, it can be used to specify options for the SSH client. See `man 5 ssh_config` for possible options. The example below uses a jump server to proxy connections to the nodes.
+
+    **Example:**  
+
+    ```
+    Host *.example.com
+        ProxyCommand ssh user@jumpserver.example.com -W %h:%p
+    ```
+
+<br>
 
 ## Command Descriptions
 

@@ -41,7 +41,15 @@ elif [[ "${SR3TOOLS_DSH_ARGS}" == *"--concurrent-shell"* ]] || [[ "${SR3TOOLS_DS
 else
     dsh_args="--wait-shell ${SR3TOOLS_DSH_ARGS}"
 fi
+
 # Trim leading or trailing whitespace, otherwise dsh complains
 dsh_args=$(echo "${dsh_args}" | sed -e 's/ *$//g' | sed -e 's/*$ //g')
 
-dsh --remoteshell ssh --show-machine-names "${dsh_args}" --file "${machine_list}" "$*"
+# Add ssh user config file (pumpname_ssh_config) to dsh args if present
+ssh_user_config="${git_tld}/_dsh_config/${pump_name}_ssh_config"
+if [ -e "${ssh_user_config}" ]; then
+    dsh_args="${dsh_args} --remoteshellopt -F${ssh_user_config}"
+fi
+
+# shellcheck disable=SC2086
+dsh --remoteshell ssh --show-machine-names ${dsh_args} --file "${machine_list}" "$*"
