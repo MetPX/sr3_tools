@@ -42,7 +42,6 @@ config_repo_root
 │   ├── cpost
 │   ├── credentials.conf
 │   ├── default.conf
-│   ├── plugins
 │   ├── poll
 │   ├── post
 │   ├── sarra
@@ -87,6 +86,31 @@ These files define the configurations used for `dsh` and `ssh`.
     Host *.example.com
         ProxyCommand ssh user@jumpserver.example.com -W %h:%p
     ```
+
+### Set up config repo on each node
+
+When setting up each node, the config repository should be cloned somewhere (possibly to `~`), then the correct config subdirectory (e.g. `pump1`) should be symlinked to `~/.config/sr3`.
+
+### Plugins as a Git repo
+
+Plugin code can be managed in a *separate* Git repo from the configuration files. In this scenario, the plugins repo would be cloned to each node separately from the config repo and symlinked to `~/.config/sr3/plugins`. `sr3_pull` will run `git pull` on the plugins directory if a `.git` directory exists inside it.
+
+### Example initial set up on nodes
+
+Repeat for each node in the data pump:
+
+```bash
+cd ~
+git clone https://git.example.com/config_repo.git
+git clone https://git.example.com/plugins_repo.git
+
+ln -s ~/config_repo/pump1 ~/.config/sr3
+ln -s ~/plugins_repo/ ~/.config/sr3/plugins
+
+# Optional - check out a particular branch of the plugins repo
+cd ~/.config/sr3/plugins
+git checkout dev
+```
 
 <br>
 
