@@ -1,2 +1,3 @@
 #!/bin/bash
-sr3r -bg "cd ~/.config/sr3; git pull"
+# plugins could also be a Git repo
+sr3r -bg "cd ~/.config/sr3; git pull && if [ -d './plugins/.git' ]; then cd ./plugins && git pull; fi"
