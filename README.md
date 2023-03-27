@@ -126,8 +126,8 @@ See [`man sr3`](https://metpx.github.io/sarracenia/Reference/sr3.1.html).
 
 **Examples:**  
 
-- `sr3 start subscribe/my_config`
-- `sr3 status poll/my_poll`
+- `sr3d start subscribe/my_config`
+- `sr3d status poll/my_poll`
 
 <br>
 
