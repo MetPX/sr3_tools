@@ -189,3 +189,20 @@ Usage: `sr3r your_command`
 *"sr3 run"* executes a shell command on all nodes in the cluster.
 
 <br>
+
+## Environment Variable Options
+
+Specific environment variables can be used to set options for sr3_tools.
+
+### `SR3TOOLS_DSH_ARGS`
+  
+Passes additional arguments to `dsh`. See the `dsh` man page for full details.   
+  
+**Example:** `SR3TOOLS_DSH_ARGS="--remoteshellopt -vvv"`
+  
+### `SR3TOOLS_COLOUR_CMDS`
+  
+Used to force certain commands to output in colour. Replaces all instances of `$cmd` with `$cmd --color=always`.  
+  
+**Example:** `export SR3TOOLS_COLOUR_CMDS="grep ls"` will always colourize the output of `grep` and `ls`.  
+

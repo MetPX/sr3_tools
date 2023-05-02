@@ -58,8 +58,17 @@ if [ -e "${ssh_user_config}" ] && { [ -z "${SSH_AUTH_SOCK}" ] || [ -z "${SSH_AGE
     unset_ssh_agent=true
 fi
 
+# Force colours for user-defined commands (SR3TOOLS_COLOUR_CMDS should be a space separated list of commands
+# that should be colourized. Example: SR3TOOLS_COLOUR_CMDS="grep ls"
+run_cmds="$*"
+if [[ -v SR3TOOLS_COLOUR_CMDS ]]; then
+    for cmd in ${SR3TOOLS_COLOUR_CMDS}; do
+        run_cmds="${run_cmds//${cmd}/${cmd} --color=always}"
+    done
+fi
+
 # shellcheck disable=SC2086
-dsh --remoteshell ssh --show-machine-names ${dsh_args} --file "${machine_list}" "$*"
+dsh --remoteshell ssh --show-machine-names ${dsh_args} --file "${machine_list}" "$run_cmds"
 
 # Clean up ssh-agent
 if [ "${unset_ssh_agent}" = "true" ] && [ -n "${SSH_AGENT_PID}" ]; then
