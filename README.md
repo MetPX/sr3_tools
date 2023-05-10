@@ -188,6 +188,8 @@ Usage: `sr3r your_command`
 
 *"sr3 run"* executes a shell command on all nodes in the cluster.
 
+<br>
+
 ### `sr3_ssh`
 
 Usage: `sr3_ssh user@server`
