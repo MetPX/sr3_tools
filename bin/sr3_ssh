@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [[ $# == 0 ]]; then
+    echo '[ERROR] no destination given'
+    echo 'Usage: sr3_ssh destination_server'
+    exit 2
+fi
+
+# git rev-parse --show-toplevel gives the path to the top of the Git repo
+# Data pump name is the name of the next directory below
+git_tld=$(git rev-parse --show-toplevel)
+ret=$?
+if [ $ret != 0 ]; then
+    echo "[ERROR] $0 must be run within a Git repository."
+    exit $ret
+fi
+pump_name=$(pwd -P | sed "s|$(git rev-parse --show-toplevel)||g" | cut -d '/' -f 2)
+if [ ${#pump_name} -le 0 ]; then
+    echo "[ERROR] Invalid data pump name. Are you in the correct directory?"
+    exit 3
+fi
+
+echo "Data Pump Name: ${pump_name}."
+
+# Use ssh user config file (pumpname_ssh_config) if present
+ssh_user_config="${git_tld}/_dsh_config/${pump_name}_ssh_config"
+ssg_args=""
+if [ -e "${ssh_user_config}" ]; then
+    ssh_args="${ssh_args} -F${ssh_user_config}"
+fi
+
+# ssh-agent environment variables are required when proxying the SSH connection through a jump server using `ssh-add`
+unset_ssh_agent=false
+if [ -e "${ssh_user_config}" ] && { [ -z "${SSH_AUTH_SOCK}" ] || [ -z "${SSH_AGENT_PID}" ]; } && grep -q "ssh-add" "${ssh_user_config}"; then
+    eval "$(ssh-agent -s)" > /dev/null
+    unset_ssh_agent=true
+fi
+
+# shellcheck disable=SC2086
+ssh ${ssh_args} "$*"
+
+# Clean up ssh-agent
+if [ "${unset_ssh_agent}" = "true" ] && [ -n "${SSH_AGENT_PID}" ]; then
+    eval "$(ssh-agent -k)" > /dev/null
+fi

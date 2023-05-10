@@ -188,6 +188,12 @@ Usage: `sr3r your_command`
 
 *"sr3 run"* executes a shell command on all nodes in the cluster.
 
+### `sr3_ssh`
+
+Usage: `sr3_ssh user@server`
+
+*"sr3_ssh"* SSHes to a remote server, using the same SSH config file that is used for *sr3r*. This is essentially a shortcut to SSH to a server using the same proxy config that would be used for *dsh* with the other commands.
+
 <br>
 
 ## Environment Variable Options
