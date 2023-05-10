@@ -24,9 +24,11 @@ echo "Data Pump Name: ${pump_name}."
 
 # Use ssh user config file (pumpname_ssh_config) if present
 ssh_user_config="${git_tld}/_dsh_config/${pump_name}_ssh_config"
-ssg_args=""
+ssh_args=""
 if [ -e "${ssh_user_config}" ]; then
     ssh_args="${ssh_args} -F${ssh_user_config}"
+else
+    echo "[WARNING] ${ssh_user_config} doesn't exist, sr3_ssh will not do anything different than normal ssh."
 fi
 
 # ssh-agent environment variables are required when proxying the SSH connection through a jump server using `ssh-add`
@@ -36,7 +38,7 @@ if [ -e "${ssh_user_config}" ] && { [ -z "${SSH_AUTH_SOCK}" ] || [ -z "${SSH_AGE
     unset_ssh_agent=true
 fi
 
-# shellcheck disable=SC2086
+# shellcheck disable=SC2086,SC2029
 ssh ${ssh_args} "$*"
 
 # Clean up ssh-agent
