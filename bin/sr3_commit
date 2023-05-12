@@ -21,7 +21,7 @@ while [[ $# -gt 0 ]]; do
             shift # arg
             shift # value
             ;;
-        -*|--*)
+        -*)
             echo "Unknown option $1"
             exit 2
             ;;
@@ -45,10 +45,10 @@ if ! git pull; then
 fi
 
 # Add the files
-git add "${files_to_add}"
+git add "${files_to_add[@]}"
 
 # Commit the files
-if [[ ! -z ${message} ]]; then
+if [[ -n ${message} ]]; then
     git commit -m "${message}"
 else
     git commit

@@ -131,6 +131,21 @@ See [`man sr3`](https://metpx.github.io/sarracenia/Reference/sr3.1.html).
 
 <br>
 
+### `sr3_commit`
+
+Usage: `sr3_commit <pathspec>... [-m <msg>]`  
+
+Simplifies the sequence of `git pull`, `git add <pathspec>`, `git commit [-m <msg]`, `git push origin` into one step. Recommended replacement for `sr(3)_push`.  
+
+**Examples:**  
+
+- `sr3_commit poll/poll_some_source.conf sarra/get_some_source.conf sender/send_to_server.conf -m "Add a new data feed"`
+- `sr3_commit my_config.conf`
+
+*Run `sr3_pull` afterwards to pull the latest configs to the nodes.*
+
+<br>
+
 ### `sr3_pull`
 
 Does a `git pull` on each node in the cluster to update the local configs.
