@@ -1,0 +1,63 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]; then
+    echo '[ERROR] no file(s) to commit'
+    echo 'Usage: sr3_commit <pathspec>... [-m <msg>]'
+    echo '       You must provide one or more files to commit, a commit message is optional.'
+    echo
+    echo '       <pathspec>...'
+    echo '           Files to add content from. Fileglobs (e.g.  *.c) can be given to add all matching files. (passed to git add)'
+    echo '       -m <msg>, --message=<msg>'
+    echo '           Use the given <msg> as the commit message. (passed to git commit)'
+    exit 1
+fi
+
+files_to_add=()
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -m|--message)
+            message="$2"
+            shift # arg
+            shift # value
+            ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 2
+            ;;
+        *)
+            files_to_add+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Directory must be controlled by Git
+if ! git status > /dev/null; then
+    echo '[ERROR] this directory is not version controlled with Git'
+    exit 4
+fi
+
+# Update the repository
+if ! git pull; then
+    echo "[ERROR] Problem updating local repository. Please resolve manually and retry."
+    exit 5
+fi
+
+# Add the files
+git add "${files_to_add}"
+
+# Commit the files
+if [[ ! -z ${message} ]]; then
+    git commit -m "${message}"
+else
+    git commit
+fi
+
+if ! git push origin; then
+    echo "[ERROR] Problems were encountered during repository push."
+    exit 6
+fi
+
+# Nodes get updated from the remote Git repo (I think this should be a manual step)
+#sr3_pull
