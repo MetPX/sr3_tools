@@ -16,6 +16,8 @@ Then add the `bin` directory to your path. Generally this can be done by adding 
 
 ```
 export PATH=path_to_repo/sr3_tools/bin:$PATH
+# install completion script
+source path_to_repo/sr3_tools/completion/sr3_tools_completion.bash
 ```
 
 [`dsh`](http://www.netfort.gr.jp/~dancer/software/dsh.html) is also required. On Ubuntu, it can be installed using:
@@ -228,4 +230,10 @@ Passes additional arguments to `dsh`. See the `dsh` man page for full details.
 Used to force certain commands to output in colour. Replaces all instances of `$cmd` with `$cmd --color=always`.  
   
 **Example:** `export SR3TOOLS_COLOUR_CMDS="grep ls"` will always colourize the output of `grep` and `ls`.  
+
+<br>
+
+## Completion Script
+
+A Bash completion script is included. This script allows automatic completion of arguments for some of the sr3_tools commands.
 
