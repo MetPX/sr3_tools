@@ -79,3 +79,21 @@ _sr3l()
 }
 
 complete -o nospace -F _sr3l sr3l
+
+###
+# sr3_commit
+# Complete using modified file paths in the Git repo
+# Currently ignores the -m/--message option
+###
+_sr3_commit()
+{
+    mapfile -t tempreply < <(compgen -W "$(git ls-files -m)"  "${COMP_WORDS[${COMP_CWORD}]}")
+    COMPREPLY=()
+    for option in "${tempreply[@]}"; do
+        if [[ "${COMP_LINE}" != *"${option}"* ]] ; then
+            COMPREPLY+=("${option} ")
+        fi
+    done
+}
+complete -o nospace -F _sr3_commit sr3_commit
+
