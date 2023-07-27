@@ -160,9 +160,8 @@ Usage: `sr3_push file_name ["Commit message"]`
 
 "Pushes" a config file by 1) commiting the file to Git and 2) running `sr3_pull` to update the configs on each node.
 
-This exists for to provide a familiar workflow for people used to using `sr_push`, but using Git branches, merging and `sr3_pull` is preferred. The Git workflow supports changing multiple files at once.
-
-The commit message is optional. If no message is passed on the command line, an editor will open where you can type the commit message.
+> **Warning**  
+> `sr3_push` is deprecated. It exists to provide a fallback option in case of a Git outage. For regular use, `sr3_commit`/Git commands and `sr3_pull` is preferred. The Git workflow supports changing multiple files at once.
 
 **Examples:**
 
