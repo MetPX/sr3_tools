@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MAIN_BRANCH="main"
+
 if [ $# -lt 1 ]; then
     echo '[ERROR] no file(s) to commit'
     echo 'Usage: sr3_commit <pathspec>... [-m <msg>]'
@@ -39,7 +41,7 @@ if ! git status > /dev/null; then
 fi
 
 # Update the repository
-if ! git pull; then
+if ! git pull origin "${MAIN_BRANCH}"; then
     echo "[ERROR] Problem updating local repository. Please resolve manually and retry."
     exit 5
 fi

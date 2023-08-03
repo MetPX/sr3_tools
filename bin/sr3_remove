@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MAIN_BRANCH="main"
+
 YELLOW='\033[1;33m'
 NORMAL='\033[0m'
 echo -e "${YELLOW}[WARNING]${NORMAL} sr3_remove is deprecated. Use Git and sr3_pull instead."
@@ -23,7 +25,7 @@ if ! git status > /dev/null; then
 fi
 
 # Update the repository
-if ! git pull; then
+if ! git pull origin "${MAIN_BRANCH}"; then
     echo "[ERROR] Problem updating local repository. Please resolve manually and retry."
     exit 5
 fi
