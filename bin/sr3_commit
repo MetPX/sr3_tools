@@ -56,7 +56,8 @@ else
     git commit
 fi
 
-if ! git push origin; then
+# Always push the current branch to the remote
+if ! git push --set-upstream origin "$(git rev-parse --abbrev-ref HEAD)"; then
     echo "[ERROR] Problems were encountered during repository push."
     exit 6
 fi
