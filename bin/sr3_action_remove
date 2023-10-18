@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#
+# sr3 remove ... will remove the configs on the nodes.
+# The git repo needs to be updated to match.
+#
+
+source sr3_utils
+
+MAIN_BRANCH="main"
+
+# sets git_tld and pump_name
+sr3_get_git_path_pump_name
+
+pump_path="${git_tld}/${pump_name}/"
+
+# Get the absolute paths to the files to be removed
+files_to_remove=""
+for argu in "$@"; do
+    if [[ "$argu" == "remove" ]] ; then
+        continue
+    fi
+    files_to_remove="${files_to_remove} ${pump_path}${argu}.conf"
+done
+
+if [ -z "${files_to_remove}" ]; then
+    echo '[ERROR] no files to remove'
+    exit 2
+fi
+
+# Files must exist
+for file in ${files_to_remove}; do
+    if [ ! -f "${file}" ]; then
+        echo "[ERROR] File does not exist: ${file}"
+        exit 3
+    fi
+done
+
+# Directory must be controlled by Git
+if ! git status > /dev/null; then
+    echo '[ERROR] this directory is not version controlled with Git'
+    exit 4
+fi
+
+# Update the repository
+if ! git pull origin "${MAIN_BRANCH}"; then
+    echo "[ERROR] Problem updating local repository. Please resolve manually and retry."
+    exit 5
+fi
+
+# Remove the files and commit the change
+for file in ${files_to_remove}; do
+    cp -p "${file}" "${file}.off"
+done
+git rm ${files_to_remove}
+git commit
+
+if ! git push origin; then
+    echo "[ERROR] Problems were encountered during repository push."
+    exit 6
+fi
+
+# Nodes get updated from the remote Git repo
+sr3_pull
