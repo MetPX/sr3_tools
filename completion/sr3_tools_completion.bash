@@ -118,7 +118,7 @@ complete -o nospace -F _sr3l sr3l
 ###
 _sr3_commit()
 {
-    mapfile -t tempreply < <(compgen -W "$(git ls-files -m)"  "${COMP_WORDS[${COMP_CWORD}]}")
+    mapfile -t tempreply < <(compgen -W "$(git ls-files -m -o)"  "${COMP_WORDS[${COMP_CWORD}]}")
     COMPREPLY=()
     for option in "${tempreply[@]}"; do
         if [[ "${COMP_LINE}" != *"${option}"* ]] ; then
