@@ -4,13 +4,15 @@ function sr3_get_git_path_pump_name()
 {
     # git rev-parse --show-toplevel gives the path to the top of the Git repo
     # Data pump name is the name of the next directory below
-    export git_tld=$(git rev-parse --show-toplevel)
+    git_tld=$(git rev-parse --show-toplevel)
+    export git_tld
     ret=$?
     if [ $ret != 0 ]; then
         echo "[ERROR] $0 must be run within a Git repository."
         exit $ret
     fi
-    export pump_name=$(pwd -P | sed "s|$(git rev-parse --show-toplevel)||g" | cut -d '/' -f 2)
+    pump_name=$(pwd -P | sed "s|$(git rev-parse --show-toplevel)||g" | cut -d '/' -f 2)
+    export pump_name
     if [ ${#pump_name} -le 0 ]; then
         echo "[ERROR] Invalid data pump name. Are you in the correct directory?"
         exit 20

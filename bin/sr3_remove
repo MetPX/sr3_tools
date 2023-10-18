@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MAIN_BRANCH="main"
+#MAIN_BRANCH="main"
 
 YELLOW='\033[1;33m'
 NORMAL='\033[0m'
