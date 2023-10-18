@@ -5,7 +5,8 @@ action="$1"
 if ([[ "$action" == "add" ]] || [[ "$action" == "convert" ]] || [[ "$action" == "foreground" ]] || 
     [[ "$action" == "convert" ]] || [[ "$action" == "run" ]] ); then
     echo "Action ${action} is not supported with sr3d."
-    echo "https://github.com/MetPX/sr3_tools/issues/2"
+    echo "https://github.com/MetPX/sr3_tools/issues/2"i
+    exit 1
 fi
 
 sr3r "sr3 $*"
