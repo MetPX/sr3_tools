@@ -172,18 +172,6 @@ The commit message is optional. If no message is passed on the command line, an 
 
 <br>
 
-### `sr3_remove`
-
-Usage: `sr3_remove config_file.conf`
-
-Used to remove a configuration. *The config should be stopped first.* Removes the file from Git, runs `sr3_pull` to update the nodes.
-
-**Example:**
-
-- `sr3_remove my_bad_config.conf`
-
-<br>
-
 ### `sr3l`
 
 Usage: `sr3l your_command`
