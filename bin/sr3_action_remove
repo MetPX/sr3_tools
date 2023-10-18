@@ -21,6 +21,9 @@ for argu in "$@"; do
     if [[ "$argu" == "remove" ]] ; then
         continue
     fi
+    if [[ "$argu" == "--dangerWillRobinson" ]] ; then
+        continue
+    fi
     files_to_remove+=("${pump_path}${argu}.conf")
 done
 

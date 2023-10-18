@@ -83,6 +83,7 @@ component_config()
 # sr3d syntax is the same as sr3:
 #     sr3d action [component/config]
 # except some actions (edit, foreground, etc.) don't make sense on a cluster
+# TODO: support --dangerWillRobinson as 1st arg (before action) or 2nd arg (after action)
 ###
 _sr3d()
 {

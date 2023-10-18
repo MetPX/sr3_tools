@@ -13,5 +13,10 @@ sr3r "sr3 $*"
 
 # Special cases for certain actions AFTER running on nodes
 if [[ "$action" == "remove" ]] ; then
+    # Removing more than one config at a time requires --dangerWillRobinson
+    if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
+        echo "[ERROR] --dangerWillRobinson is required to remove more than one config."
+        exit 1
+    fi
     sr3_action_remove "$@"
 fi
