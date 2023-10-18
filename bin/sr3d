@@ -15,7 +15,8 @@ sr3r "sr3 $*"
 if [[ "$action" == "remove" ]] ; then
     # Removing more than one config at a time requires --dangerWillRobinson
     if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
-        echo "[ERROR] --dangerWillRobinson is required to remove more than one config."
+	# sr3 gives its own error, so an error here is redundant
+        #echo "[ERROR] --dangerWillRobinson is required to remove more than one config."
         exit 1
     fi
     sr3_action_remove "$@"
