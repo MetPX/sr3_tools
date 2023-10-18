@@ -24,7 +24,7 @@ for argu in "$@"; do
     files_to_remove+=("${pump_path}${argu}.conf")
 done
 
-if [ -z "${files_to_remove}" ] || [ ${#files_to_remove[@]} -eq 0 ]; then
+if [ ${#files_to_remove[@]} -eq 0 ]; then
     echo '[ERROR] no files to remove'
     exit 2
 fi
