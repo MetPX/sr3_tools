@@ -5,6 +5,7 @@
 # The git repo needs to be updated to match.
 #
 
+# shellcheck source=./sr3_utils
 source "${BASH_SOURCE%/*}/sr3_utils"
 
 MAIN_BRANCH="main"
