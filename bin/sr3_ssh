@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shellcheck source=./sr3_utils
+# shellcheck source=./bin/sr3_utils
 source "${BASH_SOURCE%/*}/sr3_utils"
 
 if [[ $# == 0 ]]; then
