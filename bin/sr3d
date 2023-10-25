@@ -1,12 +1,25 @@
 #!/bin/bash
-action="$1"
+
+# Need to figure out where the action is
+SR3_ACTIONS="cleanup declare disable enable list restart run sanity setup show start status stop"
+for argu in "$@"; do
+    if [[ "${SR3_ACTIONS}" == *"${argu}"* ]]; then
+        action="${argu}"
+	break
+    fi
+done
+if [ -z "${action}" ]; then 
+    echo "Could not determine which argument contained the action."
+    echo "Actions are: ${SR3_ACTIONS}"
+    exit 1
+fi
 
 # Special cases for certain actions BEFORE running on nodes
 if [[ "$action" == "add" ]] || [[ "$action" == "convert" ]] || [[ "$action" == "foreground" ]] || \
     [[ "$action" == "convert" ]] || [[ "$action" == "run" ]] ; then
     echo "Action ${action} is not supported with sr3d."
     echo "https://github.com/MetPX/sr3_tools/issues/2"i
-    exit 1
+    exit 2
 fi
 
 sr3r "sr3 $*"
@@ -17,7 +30,7 @@ if [[ "$action" == "remove" ]] ; then
     if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
 	# sr3 gives its own error, so an error here is redundant
         #echo "[ERROR] --dangerWillRobinson is required to remove more than one config."
-        exit 1
+        exit 3
     fi
     sr3_action_remove "$@"
 fi
