@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Need to figure out where the action is
-SR3_ACTIONS="cleanup declare disable enable list restart run sanity setup show start status stop"
+SR3_ACTIONS="cleanup declare disable enable list remove restart run sanity setup show start status stop"
 for argu in "$@"; do
     if [[ "${SR3_ACTIONS}" == *"${argu}"* ]]; then
         action="${argu}"
