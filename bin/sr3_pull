@@ -1,3 +1,4 @@
 #!/bin/bash
 # plugins could also be a Git repo
-sr3r -bg "cd ~/.config/sr3; git reset --hard HEAD; git pull && if [ -d './plugins/.git' ]; then cd ./plugins && git reset --hard HEAD && git pull; fi"
+sr3r -bg "cd ~/.config/sr3; \
+	git reset --hard HEAD > /dev/null; git pull | awk '{ print \"Config Repo \" \$0 }' && if [ -d './plugins/.git' ]; then cd ./plugins && git reset --hard HEAD > /dev/null && git pull | awk '{ print \"Plugins Repo \" \$0 }'; fi"
