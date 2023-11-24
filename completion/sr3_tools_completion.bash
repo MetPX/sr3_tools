@@ -2,7 +2,7 @@
 
 SARRA_COMPONENTS="cpost flow poll post watch sarra sender shovel subscribe winnow"
 SARRA_COMPONENTS_RE="^(${SARRA_COMPONENTS// /|})\$"
-SR3_ACTIONS="cleanup declare disable enable list restart run sanity setup show start status stop"
+SR3_ACTIONS="cleanup declare disable enable list remove restart run sanity setup show start status stop"
 
 ###
 # component_config

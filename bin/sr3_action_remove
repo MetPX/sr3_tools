@@ -24,7 +24,11 @@ for argu in "$@"; do
     if [[ "$argu" == "--dangerWillRobinson" ]] ; then
         continue
     fi
-    files_to_remove+=("${pump_path}${argu}.conf")
+    if [[ "$argu" == *".conf"* ]] ; then
+        files_to_remove+=("${pump_path}${argu}")
+    else
+        files_to_remove+=("${pump_path}${argu}.conf")
+    fi
 done
 
 if [ ${#files_to_remove[@]} -eq 0 ]; then
