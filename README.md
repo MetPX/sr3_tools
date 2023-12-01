@@ -126,6 +126,11 @@ Usage: `sr3d [ -h ] (convert|declare|devsnap|dump|edit|log|restart|sanity|setup|
 
 See [`man sr3`](https://metpx.github.io/sarracenia/Reference/sr3.1.html).
 
+**Special Cases:**
+
+- `convert`: converts the config from v2 to sr3 on the first node in the cluster, then copies the sr3 config to your workstation and removes the config from the node. The user needs to manually disable the v2 config, commit the sr3 config, and run `sr3_pull` to update the cluster.
+- `remove`: runs `sr3 remove ...` on the cluster and deletes the config from your Git repo.
+
 **Examples:**  
 
 - `sr3d start subscribe/my_config`
@@ -192,6 +197,14 @@ Try to be as specific as possible when grepping, e.g. search within `sender*my_c
 Usage: `sr3r your_command`
 
 *"sr3 run"* executes a shell command on all nodes in the cluster.
+
+<br>
+
+### `sr3_scp`
+
+Usage: `sr3_scp user@server:/remote/file /local/file`
+
+Like *sr3_ssh*, but for scp.
 
 <br>
 
