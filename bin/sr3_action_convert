@@ -1,0 +1,112 @@
+#!/bin/bash
+
+#
+# sr3 convert
+#
+# Runs a convert on one node and pulls the config(s) back to your workstation.
+# - Runs sr3 convert
+# - Runs the plugins conversion tool, if it exists (internal script)
+# - Copies the converted configs back to your workstation
+# - Runs sr3_pull to reset the repo on the nodes back to the original state
+#
+# Note: after conversion, you need to commit the converted configs manually 
+#       and do sr3_pull
+#
+
+# shellcheck source=./bin/sr3_utils
+source "${BASH_SOURCE%/*}/sr3_utils"
+
+MAIN_BRANCH="main"
+
+# sets git_tld and pump_name
+sr3_get_git_path_pump_name
+
+pump_path="${git_tld}/${pump_name}/"
+
+# Get the paths to the files to be converted
+things_to_convert=()
+remote_v2_files_to_convert=()
+remote_sr3_files=()
+local_sr3_files=()
+for argu in "$@"; do
+    if [[ "$argu" == "convert" ]] ; then
+        continue
+    fi
+    if [[ "$argu" == "--dangerWillRobinson" ]] ; then
+        continue
+    fi
+    if [[ "$argu" == *".conf"* ]] ; then
+    things_to_convert+=("${argu/.conf/}")
+    remote_v2_files_to_convert+=("~/.config/sarra/${argu}")
+    remote_sr3_files+=("~/.config/sr3/${argu}")
+        local_sr3_files+=("${pump_path}${argu}")
+    else
+    things_to_convert+=("${argu}")
+        remote_v2_files_to_convert+=("~/.config/sarra/${argu}.conf")
+    remote_sr3_files+=("~/.config/sr3/${argu}.conf")
+        local_sr3_files+=("${pump_path}${argu}.conf")
+    fi
+done
+
+if [ ${#things_to_convert[@]} -eq 0 ]; then
+    echo '[ERROR] no configs to convert'
+    exit 2
+fi
+
+# What node?
+machine_list="${git_tld}/_dsh_config/${pump_name}.list"
+first_node=$(head -n1 "${machine_list}")
+echo "Running on $first_node"
+
+# Check that the v2 configs exist
+for remote_v2_file in "${remote_v2_files_to_convert[@]}"; do
+    result=""
+    result=$(sr3_ssh "${first_node}" "[[ -f ${remote_v2_file} ]] && echo EXISTS")
+    if [[ "${result}" != *"EXISTS" ]]; then
+        echo "${remote_v2_file} does not exist on the remote node. Aborting conversion!"
+        echo "No configs have been converted. Exiting."
+        exit 3
+    fi
+done
+
+# Check that the sr3 configs do not exist
+for i in "${!remote_sr3_files[@]}"; do
+    remote_sr3_file="${remote_sr3_files[i]}"
+    comp_config="${things_to_convert[i]}"
+    result=""
+    result=$(sr3_ssh "${first_node}" "[[ -f ${remote_sr3_file} ]] && echo EXISTS")
+    if [[ "${result}" == *"EXISTS" ]]; then
+        echo "${remote_sr3_file} already exists on the remote node. Aborting conversion!"
+        echo "If you really want to convert ${comp_config} from v2, remove the sr3 config first."
+        echo "No configs have been converted. Exiting."
+        exit 3
+    fi
+done
+
+# Run the convert
+sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[@]}" | sed 's/Data Pump Name:.*//g' | awk NF
+# Run the plugins conversion script, if it exists. "looking  for..." lines are filtered out
+sr3_ssh "${first_node}" "[[ -f ~/.config/sr3/plugins/tools/convert_configs.sh ]] && cd ~/.config/sr3/ \
+                         && ~/.config/sr3/plugins/tools/convert_configs.sh ${remote_sr3_files[@]} | sed 's/looking  for.*//g' \
+                         || echo 'WARNING: ~/.config/sr3/plugins/tools/convert_configs.sh failed or ' \
+                                 'does not exist. References to plugins in converted configs need to ' \
+                                 'be updated manually.'" | sed 's/Data Pump Name:.*//g' | awk NF
+
+# Copy converted files back and delete from node
+for i in "${!remote_sr3_files[@]}"; do
+    remote_sr3_file="${remote_sr3_files[i]}"
+    local_sr3_file="${local_sr3_files[i]}"
+    sr3_scp "${first_node}:${remote_sr3_file}" "${local_sr3_file}" | sed 's/Data Pump Name:.*//g' | awk NF
+    sr3_ssh "${first_node}" "rm ${remote_sr3_file}" | sed 's/Data Pump Name:.*//g' | awk NF
+done
+
+# Reset nodes to match the remote Git repo
+sr3_pull > /dev/null
+
+echo
+echo "Converted ${things_to_convert[@]}"
+echo
+echo "You should commit the converted files to Git and run sr3_pull to update the nodes."
+echo "   Run: sr3_commit ${local_sr3_files[@]}"
+echo
+echo "NOTE: v2 configs need to be disabled and removed."
