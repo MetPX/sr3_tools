@@ -5,7 +5,7 @@ source "${BASH_SOURCE%/*}/sr3_utils"
 
 if [[ $# == 0 ]]; then
     echo '[ERROR] no destination given'
-    echo 'Usage: sr3_ssh destination_server'
+    echo 'Usage: sr3_scp destination_server:remotepath localpath'
     exit 2
 fi
 
@@ -20,7 +20,7 @@ ssh_args=""
 if [ -e "${ssh_user_config}" ]; then
     ssh_args="${ssh_args} -F${ssh_user_config}"
 else
-    echo "[WARNING] ${ssh_user_config} doesn't exist, sr3_ssh will not do anything different than normal ssh."
+    echo "[WARNING] ${ssh_user_config} doesn't exist, sr3_scp will not do anything different than normal scp."
 fi
 
 # ssh-agent environment variables are required when proxying the SSH connection through a jump server using `ssh-add`
@@ -31,7 +31,7 @@ if [ -e "${ssh_user_config}" ] && { [ -z "${SSH_AUTH_SOCK}" ] || [ -z "${SSH_AGE
 fi
 
 # shellcheck disable=SC2086,SC2029
-ssh ${ssh_args} "$@"
+scp ${ssh_args} "$@"
 
 # Clean up ssh-agent
 if [ "${unset_ssh_agent}" = "true" ] && [ -n "${SSH_AGENT_PID}" ]; then
