@@ -13,10 +13,11 @@
 #       and do sr3_pull
 #
 
+# Disable warnings about ~ not expanding. It needs to expand on the remote node, not locally.
+# shellcheck disable=SC2088
+
 # shellcheck source=./bin/sr3_utils
 source "${BASH_SOURCE%/*}/sr3_utils"
-
-MAIN_BRANCH="main"
 
 # sets git_tld and pump_name
 sr3_get_git_path_pump_name
@@ -84,10 +85,10 @@ for i in "${!remote_sr3_files[@]}"; do
 done
 
 # Run the convert
-sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[@]}" | sed 's/Data Pump Name:.*//g' | awk NF
+sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[*]}" | sed 's/Data Pump Name:.*//g' | awk NF
 # Run the plugins conversion script, if it exists. "looking  for..." lines are filtered out
 sr3_ssh "${first_node}" "[[ -f ~/.config/sr3/plugins/tools/convert_configs.sh ]] && cd ~/.config/sr3/ \
-                         && ~/.config/sr3/plugins/tools/convert_configs.sh ${remote_sr3_files[@]} | sed 's/looking  for.*//g' \
+                         && ~/.config/sr3/plugins/tools/convert_configs.sh ${remote_sr3_files[*]} | sed 's/looking  for.*//g' \
                          || echo 'WARNING: ~/.config/sr3/plugins/tools/convert_configs.sh failed or ' \
                                  'does not exist. References to plugins in converted configs need to ' \
                                  'be updated manually.'" | sed 's/Data Pump Name:.*//g' | awk NF
@@ -104,9 +105,9 @@ done
 sr3_pull > /dev/null
 
 echo
-echo "Converted ${things_to_convert[@]}"
+echo "Converted ${things_to_convert[*]}"
 echo
 echo "You should commit the converted files to Git and run sr3_pull to update the nodes."
-echo "   Run: sr3_commit ${local_sr3_files[@]}"
+echo "   Run: sr3_commit ${local_sr3_files[*]}"
 echo
 echo "NOTE: v2 configs need to be disabled and removed."
