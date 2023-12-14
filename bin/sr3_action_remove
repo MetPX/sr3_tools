@@ -38,6 +38,7 @@ fi
 
 # Files must exist
 for item in "${files_to_remove[@]}"; do
+    # shellcheck disable=SC2059
     for file in ${item}; do 
         if [ ! -f "${file}" ]; then
             echo "[ERROR] File does not exist: ${file}"
@@ -60,6 +61,7 @@ fi
 
 # Remove the files and commit the change
 for item in "${files_to_remove[@]}"; do
+    # shellcheck disable=SC2059
     for file in ${item}; do
         cp -p "${file}" "${file}.off"
     done
