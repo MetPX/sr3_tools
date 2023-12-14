@@ -67,6 +67,7 @@ for item in "${files_to_remove[@]}"; do
     done
 done
 
+# shellcheck disable=SC2059
 git rm ${files_to_remove[@]}
 git commit
 
