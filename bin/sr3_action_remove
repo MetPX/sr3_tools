@@ -37,11 +37,13 @@ if [ ${#files_to_remove[@]} -eq 0 ]; then
 fi
 
 # Files must exist
-for file in "${files_to_remove[@]}"; do
-    if [ ! -f "${file}" ]; then
-        echo "[ERROR] File does not exist: ${file}"
-        exit 3
-    fi
+for item in "${files_to_remove[@]}"; do
+    for file in ${item}; do 
+        if [ ! -f "${file}" ]; then
+            echo "[ERROR] File does not exist: ${file}"
+            exit 3
+        fi
+    done
 done
 
 # Directory must be controlled by Git
@@ -57,11 +59,13 @@ if ! git pull origin "${MAIN_BRANCH}"; then
 fi
 
 # Remove the files and commit the change
-for file in "${files_to_remove[@]}"; do
-    cp -p "${file}" "${file}.off"
+for item in "${files_to_remove[@]}"; do
+    for file in ${item}; do
+        cp -p "${file}" "${file}.off"
+    done
 done
 
-git rm "${files_to_remove[@]}"
+git rm ${files_to_remove[@]}
 git commit
 
 if ! git push origin; then
