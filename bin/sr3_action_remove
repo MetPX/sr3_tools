@@ -17,12 +17,14 @@ pump_path="${git_tld}/${pump_name}/"
 
 # Get the absolute paths to the files to be removed
 files_to_remove=()
+dwr=""
 for argu in "$@"; do
     if [[ "$argu" == "remove" ]] ; then
         continue
     fi
     if [[ "$argu" == "--dangerWillRobinson"* ]] ; then
-        continue
+        dwr="${argu}"
+	continue
     fi
     if [[ "$argu" == *".conf"* ]] ; then
         files_to_remove+=("${pump_path}${argu}")
@@ -53,10 +55,22 @@ if ! git status > /dev/null; then
     exit 4
 fi
 
+# Check for dangerWillRobinson when deleting multiple files
+if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
+    exit 6
+fi 
+if [[ "$*" == *"--dangerWillRobinson="* ]] && [[ $# -gt 2 ]]; then
+    how_many="${dwr##*=}"
+    if [ "${#files_to_remove[@]}" != "${how_many}" ] ; then
+        echo "[ERROR] ${#files_to_remove[@]} configs to be removed does not match --dangerWillRobinson=${how_many}"
+        exit 6
+    fi
+fi
+
 # Update the repository
 if ! git pull origin "${MAIN_BRANCH}"; then
     echo "[ERROR] Problem updating local repository. Please resolve manually and retry."
-    exit 5
+    exit 7
 fi
 
 # Remove the files and commit the change
@@ -74,7 +88,7 @@ git commit
 
 if ! git push origin; then
     echo "[ERROR] Problems were encountered during repository push."
-    exit 6
+    exit 8
 fi
 
 # Nodes get updated from the remote Git repo
