@@ -38,13 +38,25 @@ if [ ${#files_to_remove[@]} -eq 0 ]; then
     exit 2
 fi
 
+# Check for dangerWillRobinson when deleting multiple files
+if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
+    exit 3
+fi
+if [[ "$*" == *"--dangerWillRobinson="* ]] && [[ $# -gt 2 ]]; then
+    how_many="${dwr##*=}"
+    if [ "${#files_to_remove[@]}" != "${how_many}" ] ; then
+        echo "[ERROR] ${#files_to_remove[@]} configs to be removed does not match --dangerWillRobinson=${how_many}"
+        exit 4
+    fi
+fi
+
 # Files must exist
 for item in "${files_to_remove[@]}"; do
     # shellcheck disable=SC2059
     for file in ${item}; do 
         if [ ! -f "${file}" ]; then
             echo "[ERROR] File does not exist: ${file}"
-            exit 3
+            exit 5
         fi
     done
 done
@@ -52,19 +64,7 @@ done
 # Directory must be controlled by Git
 if ! git status > /dev/null; then
     echo '[ERROR] this directory is not version controlled with Git'
-    exit 4
-fi
-
-# Check for dangerWillRobinson when deleting multiple files
-if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
     exit 6
-fi 
-if [[ "$*" == *"--dangerWillRobinson="* ]] && [[ $# -gt 2 ]]; then
-    how_many="${dwr##*=}"
-    if [ "${#files_to_remove[@]}" != "${how_many}" ] ; then
-        echo "[ERROR] ${#files_to_remove[@]} configs to be removed does not match --dangerWillRobinson=${how_many}"
-        exit 6
-    fi
 fi
 
 # Update the repository
