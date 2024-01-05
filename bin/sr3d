@@ -8,7 +8,9 @@ for argu in "$@"; do
 	break
     fi
 done
-if [ -z "${action}" ]; then 
+
+# allow sr3d --version, for example, but do not allow any other command with no action
+if [ -z "${action}" ] && ([ $# -ne 1 ] || [[ "$1" != "--"* ]]); then
     echo "Could not determine which argument contained the action."
     echo "Actions are: ${SR3_ACTIONS}"
     exit 1
