@@ -18,7 +18,7 @@ fi
 if [[ "$action" == "add" ]] || [[ "$action" == "foreground" ]] || \
     [[ "$action" == "run" ]] ; then
     echo "Action ${action} is not supported with sr3d."
-    echo "https://github.com/MetPX/sr3_tools/issues/2"i
+    echo "https://github.com/MetPX/sr3_tools/issues/2"
     exit 2
 fi
 
@@ -32,11 +32,5 @@ sr3r "sr3 $*"
 
 # Special cases for certain actions AFTER running on nodes
 if [[ "$action" == "remove" ]] ; then
-    # Removing more than one config at a time requires --dangerWillRobinson
-    if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
-	# sr3 gives its own error, so an error here is redundant
-        #echo "[ERROR] --dangerWillRobinson is required to remove more than one config."
-        exit 3
-    fi
     sr3_action_remove "$@"
 fi

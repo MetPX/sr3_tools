@@ -17,6 +17,7 @@ pump_path="${git_tld}/${pump_name}/"
 
 # Get the absolute paths to the files to be removed
 files_to_remove=()
+includes_to_remove=()
 dwr=""
 for argu in "$@"; do
     if [[ "$argu" == "remove" ]] ; then
@@ -26,23 +27,26 @@ for argu in "$@"; do
         dwr="${argu}"
 	continue
     fi
-    if [[ "$argu" == *".conf"* ]] ; then
+    if [[ "$argu" == *".conf"* ]]; then
         files_to_remove+=("${pump_path}${argu}")
+    elif [[ "$argu" == *".inc"* ]]; then
+        includes_to_remove+=("${pump_path}${argu}")
     else
         files_to_remove+=("${pump_path}${argu}.conf")
     fi
 done
 
-if [ ${#files_to_remove[@]} -eq 0 ]; then
+if [ ${#files_to_remove[@]} -eq 0 ] && [ ${#includes_to_remove[@]} -eq 0 ]; then
     echo '[ERROR] no files to remove'
     exit 2
 fi
 
-# Check for dangerWillRobinson when deleting multiple files
-if [[ "$*" != *"--dangerWillRobinson"* ]] && [[ $# -gt 2 ]]; then
+# Check for dangerWillRobinson when deleting multiple config files
+if [[ "$*" != *"--dangerWillRobinson="* ]] && [[ "${#files_to_remove[@]}" -gt 1 ]]; then
+    # missing dangerWillRobinson, sr3 will complain, no need for an error here
     exit 3
 fi
-if [[ "$*" == *"--dangerWillRobinson="* ]] && [[ $# -gt 2 ]]; then
+if [[ "$*" == *"--dangerWillRobinson="* ]] && [[ "${#files_to_remove[@]}" -gt 1 ]]; then
     how_many="${dwr##*=}"
     if [ "${#files_to_remove[@]}" != "${how_many}" ] ; then
         echo "[ERROR] ${#files_to_remove[@]} configs to be removed does not match --dangerWillRobinson=${how_many}"
@@ -51,7 +55,7 @@ if [[ "$*" == *"--dangerWillRobinson="* ]] && [[ $# -gt 2 ]]; then
 fi
 
 # Files must exist
-for item in "${files_to_remove[@]}"; do
+for item in "${files_to_remove[@]}" "${includes_to_remove[@]}"; do
     # shellcheck disable=SC2059
     for file in ${item}; do 
         if [ ! -f "${file}" ]; then
@@ -74,7 +78,7 @@ if ! git pull origin "${MAIN_BRANCH}"; then
 fi
 
 # Remove the files and commit the change
-for item in "${files_to_remove[@]}"; do
+for item in "${files_to_remove[@]}" "${includes_to_remove[@]}"; do
     # shellcheck disable=SC2059
     for file in ${item}; do
         cp -p "${file}" "${file}.off"
@@ -83,7 +87,7 @@ done
 
 # shellcheck disable=SC2059
 # shellcheck disable=SC2068
-git rm ${files_to_remove[@]}
+git rm ${files_to_remove[@]} ${includes_to_remove[@]}
 git commit
 
 if ! git push origin; then
