@@ -87,6 +87,8 @@ done
 
 # Run the convert
 # awk NF to remove empty lines
+# disable warning that cvt_out isn't used. It's there in case we need to parse sr3's output
+# shellcheck disable=SC2034
 cvt_out=$(sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[*]}" 2>&1 | sed 's/Data Pump Name:.*//g' | awk NF | tee /dev/tty)
 # Run the plugins conversion script, if it exists. "looking  for..." lines are filtered out
 sr3_ssh "${first_node}" "[[ -f ~/.config/sr3/plugins/tools/convert_configs.sh ]] && cd ~/.config/sr3/ \
