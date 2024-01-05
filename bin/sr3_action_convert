@@ -33,18 +33,19 @@ for argu in "$@"; do
     if [[ "$argu" == "convert" ]] ; then
         continue
     fi
-    if [[ "$argu" == "--dangerWillRobinson" ]] ; then
+    if [[ "$argu" == "--dangerWillRobinson"* ]] ; then
         continue
     fi
-    if [[ "$argu" == *".conf"* ]] ; then
-    things_to_convert+=("${argu/.conf/}")
-    remote_v2_files_to_convert+=("~/.config/sarra/${argu}")
-    remote_sr3_files+=("~/.config/sr3/${argu}")
+    if [[ "$argu" == *".conf"* ]] || [[ "$argu" == *".inc"* ]]; then
+        things_to_convert+=("${argu/.conf/}")
+        remote_v2_files_to_convert+=("~/.config/sarra/${argu}")
+        remote_sr3_files+=("~/.config/sr3/${argu}")
         local_sr3_files+=("${pump_path}${argu}")
+    # when passed component/config without an extension, assume it's a .conf file
     else
-    things_to_convert+=("${argu}")
+        things_to_convert+=("${argu}")
         remote_v2_files_to_convert+=("~/.config/sarra/${argu}.conf")
-    remote_sr3_files+=("~/.config/sr3/${argu}.conf")
+        remote_sr3_files+=("~/.config/sr3/${argu}.conf")
         local_sr3_files+=("${pump_path}${argu}.conf")
     fi
 done
@@ -85,7 +86,8 @@ for i in "${!remote_sr3_files[@]}"; do
 done
 
 # Run the convert
-sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[*]}" | sed 's/Data Pump Name:.*//g' | awk NF
+# awk NF to remove empty lines
+cvt_out=$(sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[*]}" 2>&1 | sed 's/Data Pump Name:.*//g' | awk NF | tee /dev/tty)
 # Run the plugins conversion script, if it exists. "looking  for..." lines are filtered out
 sr3_ssh "${first_node}" "[[ -f ~/.config/sr3/plugins/tools/convert_configs.sh ]] && cd ~/.config/sr3/ \
                          && ~/.config/sr3/plugins/tools/convert_configs.sh ${remote_sr3_files[*]} | sed 's/looking  for.*//g' \
