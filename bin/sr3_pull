@@ -23,3 +23,4 @@ sr3r -bg "cd ~/.config/sr3; \
 if [ -n "${pre_script_bg_pid}" ]; then
 	kill "${pre_script_bg_pid}"
 fi
+wait
