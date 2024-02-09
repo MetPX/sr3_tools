@@ -1,4 +1,25 @@
 #!/bin/bash
+
+# shellcheck source=./bin/sr3_utils
+source "${BASH_SOURCE%/*}/sr3_utils"
+
+# Pre-pull script: in _dsh_config/${pump_name}_pre_pull_script. 
+# If it exists, run it. If the name ends in _bg, run in the background. You can have both.
+sr3_get_git_path_pump_name
+pre_script="${git_tld}/_dsh_config/${pump_name}_pre_pull_script"
+if [ -e "${pre_script}" ]; then
+	"${pre_script}"
+fi
+if [ -e "${pre_script}_bg" ]; then
+    "${pre_script}_bg" &
+	pre_script_bg_pid="$!"
+fi
+
 # plugins could also be a Git repo
 sr3r -bg "cd ~/.config/sr3; \
 	git reset --hard HEAD > /dev/null; git pull | awk '{ print \"Config Repo \" \$0 }' && if [ -d './plugins/.git' ]; then cd ./plugins && git reset --hard HEAD > /dev/null && git pull | awk '{ print \"Plugins Repo \" \$0 }'; fi"
+
+# Stop the pre-pull script
+if [ -n "${pre_script_bg_pid}" ]; then
+	kill "${pre_script_bg_pid}"
+fi
