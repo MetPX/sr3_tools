@@ -13,6 +13,7 @@ fi
 if [ -e "${pre_script}_bg" ]; then
     "${pre_script}_bg" &
 	pre_script_bg_pid="$!"
+	sleep 1
 fi
 
 # plugins could also be a Git repo
