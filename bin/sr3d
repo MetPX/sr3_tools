@@ -30,7 +30,13 @@ if [[ "$action" == "convert" ]] ; then
     exit "$?"
 fi
 
-sr3r "sr3 $*"
+# Pass COLUMNS env var so show knows the correct terminal width
+# and doesn't default to 80 characters wide.
+if [[ "$action" == "show" ]]; then
+    pre="export COLUMNS=$(tput cols); "
+fi
+
+sr3r "${pre}sr3 $*"
 
 # Special cases for certain actions AFTER running on nodes
 if [[ "$action" == "remove" ]] ; then
