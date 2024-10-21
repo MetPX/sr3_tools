@@ -6,7 +6,7 @@ source "${BASH_SOURCE%/*}/sr3_utils"
 if [[ $# == 0 ]]; then
     echo '[ERROR] no destination given'
     echo 'Usage: sr3_ssh destination_server'
-    echo '    or sr3_ssh -nN , where N is the line number in the DSH machine list you want to connect to"
+    echo '    or sr3_ssh -nN , where N is the line number in the DSH machine list you want to connect to'
     exit 2
 fi
 
