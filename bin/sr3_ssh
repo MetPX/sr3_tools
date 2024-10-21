@@ -6,6 +6,7 @@ source "${BASH_SOURCE%/*}/sr3_utils"
 if [[ $# == 0 ]]; then
     echo '[ERROR] no destination given'
     echo 'Usage: sr3_ssh destination_server'
+    echo '    or sr3_ssh -nN , where N is the line number in the DSH machine list you want to connect to"
     exit 2
 fi
 
@@ -37,7 +38,7 @@ if [[ "$1" == "-n"* ]] ; then
         echo "[ERROR] dsh machine list does not exist (${machine_list})."
         exit 4
     fi
-    hostname="$(head ${1} ${machine_list} | tail -n1)"
+    hostname="$(head "${1}" "${machine_list}" | tail -n1)"
     echo "Host ${1} --> ${hostname}"
     shift
 fi
