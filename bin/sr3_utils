@@ -21,7 +21,6 @@ function sr3_get_git_path_pump_name()
 
 function cleanup_ssh_agent()
 {
-    echo CLEANUP
     if [ -n "${SSH_AGENT_PID}" ]; then
         eval "$(ssh-agent -k)" > /dev/null
     fi
