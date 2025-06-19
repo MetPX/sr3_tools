@@ -25,7 +25,6 @@ else
 fi
 
 # ssh-agent environment variables are required when proxying the SSH connection through a jump server using `ssh-add`
-unset_ssh_agent=false
 if [ -e "${ssh_user_config}" ] && { [ -z "${SSH_AUTH_SOCK}" ] || [ -z "${SSH_AGENT_PID}" ]; } && grep -q "ssh-add" "${ssh_user_config}"; then
     eval "$(ssh-agent -s)" > /dev/null
     # issue #23, cleanup ssh agent properly
