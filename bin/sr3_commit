@@ -2,13 +2,15 @@
 
 if [ $# -lt 1 ]; then
     echo '[ERROR] no file(s) to commit'
-    echo 'Usage: sr3_commit <pathspec>... [-m <msg>]'
+    echo 'Usage: sr3_commit <pathspec>... [-m <msg>] -f'
     echo '       You must provide one or more files to commit, a commit message is optional.'
     echo
     echo '       <pathspec>...'
     echo '           Files to add content from. Fileglobs (e.g.  *.c) can be given to add all matching files. (passed to git add)'
     echo '       -m <msg>, --message=<msg>'
     echo '           Use the given <msg> as the commit message. (passed to git commit)'
+    echo '       -f, --force'
+    echo '           Force adding changes to a git commit'
     exit 1
 fi
 
@@ -21,6 +23,10 @@ while [[ $# -gt 0 ]]; do
             shift # arg
             shift # value
             ;;
+        -f|--force)
+            force=1
+            shift
+	    ;;
         -*)
             echo "Unknown option $1"
             exit 2
@@ -45,7 +51,11 @@ if ! git pull; then
 fi
 
 # Add the files
-git add "${files_to_add[@]}"
+if [[ -n ${force} ]]; then
+    git add -f "${files_to_add[@]}"
+else
+    git add "${files_to_add[@]}"
+fi
 
 # Commit the files
 if [[ -n ${message} ]]; then
