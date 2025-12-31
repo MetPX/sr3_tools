@@ -33,7 +33,7 @@ for argu in "$@"; do
     if [[ "$argu" == "convert" ]] ; then
         continue
     fi
-    if [[ "$argu" == "--dangerWillRobinson"* ]] ; then
+    if [[ "$argu" == "--"* ]] ; then
         continue
     fi
     if [[ "$argu" == *".conf"* ]] || [[ "$argu" == *".inc"* ]]; then
@@ -77,9 +77,9 @@ for i in "${!remote_sr3_files[@]}"; do
     comp_config="${things_to_convert[i]}"
     result=""
     result=$(sr3_ssh "${first_node}" "[[ -f ${remote_sr3_file} ]] && echo EXISTS")
-    if [[ "${result}" == *"EXISTS" ]]; then
+    if [[ "${result}" == *"EXISTS" && $1 != *"--wololo"* ]]; then
         echo "${remote_sr3_file} already exists on the remote node. Aborting conversion!"
-        echo "If you really want to convert ${comp_config} from v2, remove the sr3 config first."
+        echo "If you really want to convert ${comp_config} from v2, remove the sr3 config first or pass the --wololo argument."
         echo "No configs have been converted. Exiting."
         exit 3
     fi
@@ -89,7 +89,13 @@ done
 # awk NF to remove empty lines
 # disable warning that cvt_out isn't used. It's there in case we need to parse sr3's output
 # shellcheck disable=SC2034
-cvt_out=$(sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[*]}" 2>&1 | sed 's/Data Pump Name:.*//g' | awk NF | tee /dev/tty)
+if [[ $1 == *"--wololo"* ]]
+then
+    # Wololo always requires for dangerWillRobsinson to be set, so pass it along to the execution regardless.
+    cvt_out=$(sr3_ssh "${first_node}" "sr3 --dangerWillRobinson=${#things_to_convert[@]} --wololo convert ${things_to_convert[*]}" 2>&1 | sed 's/Data Pump Name:.*//g' | awk NF | tee /dev/tty)
+else
+    cvt_out=$(sr3_ssh "${first_node}" "sr3 convert ${things_to_convert[*]}" 2>&1 | sed 's/Data Pump Name:.*//g' | awk NF | tee /dev/tty)
+fi
 # Run the plugins conversion script, if it exists. "looking  for..." lines are filtered out
 sr3_ssh "${first_node}" "[[ -f ~/.config/sr3/plugins/tools/convert_configs.sh ]] && cd ~/.config/sr3/ \
                          && ~/.config/sr3/plugins/tools/convert_configs.sh ${remote_sr3_files[*]} | sed 's/looking  for.*//g' \
